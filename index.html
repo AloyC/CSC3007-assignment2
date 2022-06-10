@@ -23,7 +23,7 @@
                 records = data.result.records
 
                 // set the dimensions and margins of the graph
-                const margin = { top: 30, right: 30, bottom: 70, left: 60 },
+                const margin = { top: 30, right: 30, bottom: 100, left: 60 },
                     width = 460 - margin.left - margin.right,
                     height = 400 - margin.top - margin.bottom;
 
@@ -35,9 +35,8 @@
                     .append("g")
                     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-                records.filter(function (b, a) {
-                    year = "2020"
-                    return a.year - b.year;
+                var records = records.filter(function (d) {
+                    return d.year == "2020"
                 });
 
                 // sort data
@@ -60,10 +59,47 @@
 
                 // Add Y axis
                 const y = d3.scaleLinear()
-                    .domain([0, 13000])
+                    .domain([0, 17000])
                     .range([height, 0]);
+
                 svg.append("g")
                     .call(d3.axisLeft(y));
+
+                // create a tooltip
+                var Tooltip = d3.select("#chart")
+                    .data(records)
+                    .append("div")
+                    .style("opacity", 0)
+                    .attr("class", "tooltip")
+                    .style("background-color", "white")
+                    .style("border", "solid")
+                    .style("border-width", "2px")
+                    .style("border-radius", "5px")
+                    .style("padding", "5px")
+
+                const mouseover = function (d) {
+                    Tooltip
+                        .html("The rate of this crime is: " + d.value)
+                        .style("opacity", 1)
+                }
+
+                const mousemove = function (d) {
+                    Tooltip
+                        .style("opacity", 1)
+                        .style("left", (d3.pointer(this)[0] + 90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+                        .style("top", (d3.pointer(this)[1]) + "px")
+                    d3.select(this)
+                        .style("stroke", "black")
+                        .style("opacity", 1)
+                }
+
+                const mouseleave = function (d) {
+                    Tooltip
+                        .style("opacity", 0)
+                    d3.select(this)
+                        .style("stroke", "none")
+                        .style("opacity", 0.8)
+                }
 
                 // Bars
                 svg.selectAll("mybar")
@@ -75,6 +111,9 @@
                     .attr("width", x.bandwidth())
                     .attr("height", d => height - y(d.value))
                     .attr("fill", "#69b3a2")
+                    .on("mouseover", mouseover)
+                    .on("mousemove", mousemove)
+                    .on("mouseleave", mouseleave)
             }
         });
 
