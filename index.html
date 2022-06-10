@@ -77,13 +77,13 @@
                     .style("border-radius", "5px")
                     .style("padding", "5px")
 
-                const mouseover = function (d) {
+                const mouseover = function (event, d) {
                     Tooltip
                         .html("The rate of this crime is: " + d.value)
                         .style("opacity", 1)
                 }
 
-                const mousemove = function (d) {
+                const mousemove = function (event, d) {
                     Tooltip
                         .style("opacity", 1)
                         .style("left", (d3.pointer(this)[0] + 90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
